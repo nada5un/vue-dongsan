@@ -1,33 +1,25 @@
 <template>
-  <div class="black-bg" v-if="isModalOpen">
-    <div class="white-bg">
-      <h4>상세페이지임</h4>
-      <p>상세페이지 내용임</p>
-      <button @click="isModalOpen=false">닫기</button>
-    </div>
-  </div>
+  <Modal :onerooms = "onerooms" :roomIdx = "roomIdx" :isModalOpen="isModalOpen"></Modal>
   <div class="menu">
     <a v-for="(menu,index) in menus" :key="index">
       {{menu}}
     </a>
   </div>
-  <div>
-    <div v-for="data in onerooms" :key="data.id">
-      <img :src="data.image" class="room-img">
-      <h4>{{data.title}}</h4>
-      <p>{{data.price}}원</p>
-      <p>{{data.content}}</p>
-    </div>
-  </div>
+  <Discount></Discount>
+  <Card v-for="(data,idx) in onerooms" :key="idx" :data="onerooms[idx]"></Card>
 </template>
 
 <script>
 import data from './oneroom';
+import Discount from './Discount.vue'
+import Modal from './Modal.vue'
+import Card from './Card.vue'
 
 export default {
   name: 'App',
   data(){
     return {
+      roomIdx : 0,
       onerooms : data,
       isModalOpen : false,
       신고수 : [0,0,0],
@@ -41,7 +33,9 @@ export default {
     }
   },
   components: {
-    
+    Discount,
+    Modal,
+    Card
   }
 }
 </script>
@@ -55,16 +49,6 @@ div {
   box-sizing: border-box;
 }
 
-.black-bg{
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  position: fixed; padding: 20px;
-} 
-.white-bg{
-  width: 100%; background: white;
-  border-radius: 8px;
-  padding: 20px;
-}
 
 .room-img{
   width: 100%;
