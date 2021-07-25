@@ -1,12 +1,20 @@
 <template>
-  <Modal :onerooms = "onerooms" :roomIdx = "roomIdx" :isModalOpen="isModalOpen"></Modal>
+  <transition name="fade">
+    <Modal @closeModal="isModalOpen = false;" :onerooms = "onerooms" :roomIdx = "roomIdx" :isModalOpen="isModalOpen"></Modal>
+  </transition>
   <div class="menu">
     <a v-for="(menu,index) in menus" :key="index">
       {{menu}}
     </a>
   </div>
-  <Discount></Discount>
-  <Card v-for="(data,idx) in onerooms" :key="idx" :data="onerooms[idx]"></Card>
+  
+  <Discount v-if="showDiscount"></Discount>
+
+  <button @click="priceSort">가격낮은순정렬</button>
+  <button @click="priceSortReverse">가격높은순정렬</button>
+  <button @click="alphabetSort">가나다순정렬</button>
+  <button @click="sortBack">되돌리기</button>
+  <Card @OpenModal="isModalOpen = true; roomIdx=idx" :data="onerooms[idx]" v-for="(data,idx) in onerooms" :key="idx"></Card>
 </template>
 
 <script>
@@ -21,15 +29,35 @@ export default {
     return {
       roomIdx : 0,
       onerooms : data,
+      oneroomsOrigin : [...data],
       isModalOpen : false,
       신고수 : [0,0,0],
       menus:['Home','Shop','About'],
       products: data,
+      showDiscount: true,
     }
   },
   methods:{
     increase(num){
       this.신고수[num]+=1;
+    },
+    priceSort(){
+      this.onerooms.sort(function(a,b){
+        return a.price-b.price
+      });
+    },
+    priceSortReverse(){
+      this.onerooms.sort(function(a,b){
+        return b.price - a.price
+      });
+    },
+    alphabetSort(){
+      this.onerooms.sort(function(a,b){
+        return (a.title<b.title)?-1:(a.title==b.title)?0:1;
+      });
+    },
+    sortBack(){
+      this.onerooms = [...this.oneroomsOrigin];
     }
   },
   components: {
@@ -41,6 +69,27 @@ export default {
 </script>
 
 <style>
+/* 등장 */
+.fade-enter-from{
+  transform: translateY(-1000px);
+}
+.fade-enter-active{
+  transition: all 1s;
+}
+.fade-enter-to{
+  transform: translateY(0px);
+}
+/* 퇴장 */
+.fade-leave-from{
+  transform: translateY(0px);
+}
+.fade-leave-active{
+  transition: all 1s;
+}
+.fade-leave-to{
+  transform: translateY(-1000px);
+}
+
 body {
   margin: 0;
 }
@@ -48,7 +97,6 @@ body {
 div {
   box-sizing: border-box;
 }
-
 
 .room-img{
   width: 100%;
